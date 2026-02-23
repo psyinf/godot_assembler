@@ -28,6 +28,76 @@ offset_bottom = -16.0
 grow_horizontal = 0
 grow_vertical = 2
 
+[node name="SelectedInfo" type="PanelContainer" parent="PaletteRoot"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 340.0
+offset_bottom = 152.0
+
+[node name="InfoMargin" type="MarginContainer" parent="PaletteRoot/SelectedInfo"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="InfoVBox" type="VBoxContainer" parent="PaletteRoot/SelectedInfo/InfoMargin"]
+layout_mode = 2
+
+[node name="SelectedHeader" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "Selected Tile"
+
+[node name="SelectedNameLabel" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "Name"
+
+[node name="SelectedNameValue" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "-"
+
+[node name="SelectedIdLabel" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "Resource ID"
+
+[node name="SelectedIdValue" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "-"
+
+[node name="SelectedVisualValue" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "-"
+
+[node name="HoveredHeader" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "Hovered Cell"
+
+[node name="HoveredCellLabel" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "Cell"
+
+[node name="HoveredCellValue" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "-"
+
+[node name="HoveredIdLabel" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "Tile Type ID"
+
+[node name="HoveredIdValue" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "-"
+
+[node name="HoveredNameLabel" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "Name"
+
+[node name="HoveredNameValue" type="Label" parent="PaletteRoot/SelectedInfo/InfoMargin/InfoVBox"]
+layout_mode = 2
+text = "-"
+
 [node name="Margin" type="MarginContainer" parent="PaletteRoot/Panel"]
 layout_mode = 2
 theme_override_constants/margin_left = 8
