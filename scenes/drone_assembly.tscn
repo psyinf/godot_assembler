@@ -1,7 +1,8 @@
 [gd_scene format=3 uid="uid://3elegfhqbcd"]
 
 [ext_resource type="Texture2D" uid="uid://cuxox6nhs81b2" path="res://assets/assets_letterTiles/Spritesheet/metal_spritesheet.png" id="1_k51by"]
-[ext_resource type="Script" uid="uid://4xgl23i8q1md" path="res://components/GridOverlay.gd" id="2_2f4kv"]
+[ext_resource type="Script" uid="uid://d0s3fi8wafiyc" path="res://components/GridOverlayShaderScreenSpace.gd" id="2_2f4kv"]
+[ext_resource type="Shader" uid="uid://dtnmn2jloim17" path="res://components/GridOverlayShaderScreenSpace.gdshader" id="2_eic8c"]
 [ext_resource type="Script" uid="uid://dh4cg1w8fy0ea" path="res://components/CameraWASD.gd" id="3_7a3tk"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_40inn"]
@@ -41,13 +42,23 @@ texture_region_size = Vector2i(256, 256)
 tile_size = Vector2i(256, 256)
 sources/0 = SubResource("TileSetAtlasSource_40inn")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ou5vj"]
+shader = ExtResource("2_eic8c")
+shader_parameter/cell_size = Vector2(256, 256)
+shader_parameter/draw_size = Vector2(256, 256)
+shader_parameter/line_thickness_pixels = 1.0
+shader_parameter/line_color = Color(1, 1, 1, 0.28)
+
 [node name="Node2D" type="Node2D" unique_id=1017224262]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=136936236]
+tile_map_data = PackedByteArray(0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0)
 tile_set = SubResource("TileSet_ia2ac")
 
 [node name="GridOverlay" type="Node2D" parent="TileMapLayer" unique_id=141049593]
+material = SubResource("ShaderMaterial_ou5vj")
 script = ExtResource("2_2f4kv")
+line_width_pixels = 1.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=435055905]
 zoom = Vector2(10, 10)
