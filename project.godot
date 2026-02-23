@@ -22,3 +22,4 @@ config/icon="res://icon.svg"
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+viewport/hdr_2d=true

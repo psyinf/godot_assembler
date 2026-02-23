@@ -1,11 +1,14 @@
 @tool
-class_name GridOverlayShaderScreenSpace
+class_name GridOverlayShader
 extends Node2D
 
-const GRID_SHADER = preload("res://components/GridOverlayShaderScreenSpace.gdshader")
+const GRID_SHADER = preload("res://components/grid_overlay/GridOverlayShader.gdshader")
 
-@export var line_color: Color = Color(1.0, 1.0, 1.0, 0.28)
-@export_range(0.5, 8.0, 0.5) var line_width_pixels: float = 1.0
+@export var line_color: Color = Color(0.0, 1.0, 1.0, 0.28)
+@export_range(0.5, 8.0, 0.5) var line_width: float = 1.0
+@export var draw_used_rect_only: bool = true
+@export var show_fallback_grid_when_empty: bool = true
+@export var fallback_grid_rect: Rect2i = Rect2i(Vector2i(-8, -8), Vector2i(16, 16))
 
 var _tilemap_parent: TileMapLayer
 
@@ -32,7 +35,10 @@ func _draw() -> void:
 
 	var used_rect := _get_used_rect()
 	if used_rect.size == Vector2i.ZERO:
-		return
+		if show_fallback_grid_when_empty:
+			used_rect = fallback_grid_rect
+		else:
+			return
 
 	var min_cell := used_rect.position
 	var max_cell := used_rect.position + used_rect.size
@@ -50,7 +56,7 @@ func _draw() -> void:
 	var shader_material := material as ShaderMaterial
 	shader_material.set_shader_parameter("cell_size", cell_size)
 	shader_material.set_shader_parameter("draw_size", size)
-	shader_material.set_shader_parameter("line_thickness_pixels", line_width_pixels)
+	shader_material.set_shader_parameter("line_thickness", line_width)
 	shader_material.set_shader_parameter("line_color", line_color)
 
 	var points := PackedVector2Array([
@@ -99,7 +105,25 @@ func _get_used_rect() -> Rect2i:
 	if _tilemap_parent == null:
 		return Rect2i()
 
-	return _tilemap_parent.get_used_rect()
+	if draw_used_rect_only:
+		return _tilemap_parent.get_used_rect()
+
+	var cells := _tilemap_parent.get_used_cells()
+	if cells.is_empty():
+		return Rect2i()
+
+	var min_x := cells[0].x
+	var min_y := cells[0].y
+	var max_x := cells[0].x
+	var max_y := cells[0].y
+
+	for cell in cells:
+		min_x = mini(min_x, cell.x)
+		min_y = mini(min_y, cell.y)
+		max_x = maxi(max_x, cell.x)
+		max_y = maxi(max_y, cell.y)
+
+	return Rect2i(Vector2i(min_x, min_y), Vector2i(max_x - min_x + 1, max_y - min_y + 1))
 
 
 func _get_cell_size() -> Vector2:

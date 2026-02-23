@@ -1,7 +1,7 @@
 @tool
 extends TileMapLayer
 
-@export var area_origin: Vector2i = Vector2i.ZERO
+@export var area_origin: Vector2i = Vector2i(-8, -16)
 @export var area_size: Vector2i = Vector2i(16, 32)
 @export var source_id: int = 0
 @export var atlas_coords: Vector2i = Vector2i.ZERO
@@ -16,19 +16,17 @@ func _ensure_playable_area() -> void:
 	if area_size.x <= 0 or area_size.y <= 0:
 		return
 
+	clear()
+
 	var end_x := area_origin.x + area_size.x
 	var end_y := area_origin.y + area_size.y
-	var changed := false
 
 	for y in range(area_origin.y, end_y):
 		for x in range(area_origin.x, end_x):
 			var cell := Vector2i(x, y)
-			if get_cell_source_id(cell) == -1:
-				set_cell(cell, source_id, atlas_coords, alternative_tile)
-				changed = true
+			set_cell(cell, source_id, atlas_coords, alternative_tile)
 
-	if changed:
-		queue_redraw()
-		for child in get_children():
-			if child is CanvasItem:
-				child.queue_redraw()
+	queue_redraw()
+	for child in get_children():
+		if child is CanvasItem:
+			child.queue_redraw()

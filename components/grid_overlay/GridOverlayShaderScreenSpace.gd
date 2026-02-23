@@ -1,16 +1,20 @@
 @tool
-class_name GridOverlayShader
+class_name GridOverlayShaderScreenSpace
 extends Node2D
 
-const GRID_SHADER = preload("res://components/GridOverlayShader.gdshader")
+const GRID_SHADER = preload("res://components/grid_overlay/GridOverlayShaderScreenSpace.gdshader")
+const ZERO_AXES_PASS_SCRIPT = preload("res://components/grid_overlay/ZeroGridAxesPass.gd")
 
-@export var line_color: Color = Color(0.0, 1.0, 1.0, 0.28)
-@export_range(0.5, 8.0, 0.5) var line_width: float = 1.0
-@export var draw_used_rect_only: bool = true
-@export var show_fallback_grid_when_empty: bool = true
-@export var fallback_grid_rect: Rect2i = Rect2i(Vector2i(-8, -8), Vector2i(16, 16))
+@export var line_color: Color = Color(1.0, 1.0, 1.0, 0.28)
+@export_range(0.1, 8.0, 0.1) var line_width_pixels: float = 0.5
+@export_group("ZeroGridLines")
+@export var show_zero_grid_lines: bool = false
+@export var zero_x_axis_color: Color = Color(1.0, 0.25, 0.25, 0.85)
+@export var zero_y_axis_color: Color = Color(0.25, 1.0, 0.25, 0.85)
+@export_range(0.01, 8.0, 0.01) var zero_line_width_pixels: float = 0.2
 
 var _tilemap_parent: TileMapLayer
+var _zero_axes_pass: ZeroGridAxesPass
 
 
 func _enter_tree() -> void:
@@ -20,13 +24,17 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	_bind_parent_tilemap()
 	_ensure_shader_material()
+	_sync_zero_axes_pass()
 	queue_redraw()
 	set_process(Engine.is_editor_hint())
 
 
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
+		_sync_zero_axes_pass()
 		queue_redraw()
+
+	_update_zero_axes_pass()
 
 
 func _draw() -> void:
@@ -35,10 +43,7 @@ func _draw() -> void:
 
 	var used_rect := _get_used_rect()
 	if used_rect.size == Vector2i.ZERO:
-		if show_fallback_grid_when_empty:
-			used_rect = fallback_grid_rect
-		else:
-			return
+		return
 
 	var min_cell := used_rect.position
 	var max_cell := used_rect.position + used_rect.size
@@ -56,7 +61,7 @@ func _draw() -> void:
 	var shader_material := material as ShaderMaterial
 	shader_material.set_shader_parameter("cell_size", cell_size)
 	shader_material.set_shader_parameter("draw_size", size)
-	shader_material.set_shader_parameter("line_thickness", line_width)
+	shader_material.set_shader_parameter("line_thickness_pixels", line_width_pixels)
 	shader_material.set_shader_parameter("line_color", line_color)
 
 	var points := PackedVector2Array([
@@ -85,6 +90,34 @@ func _ensure_shader_material() -> void:
 	material = shader_material
 
 
+func _sync_zero_axes_pass() -> void:
+	if show_zero_grid_lines:
+		if _zero_axes_pass == null or not is_instance_valid(_zero_axes_pass):
+			var child := get_node_or_null("ZeroGridAxesPass")
+			if child != null and child is ZeroGridAxesPass:
+				_zero_axes_pass = child
+			else:
+				_zero_axes_pass = ZERO_AXES_PASS_SCRIPT.new()
+				_zero_axes_pass.name = "ZeroGridAxesPass"
+				add_child(_zero_axes_pass)
+
+		_update_zero_axes_pass()
+		return
+
+	if _zero_axes_pass != null and is_instance_valid(_zero_axes_pass):
+		_zero_axes_pass.queue_free()
+		_zero_axes_pass = null
+
+
+func _update_zero_axes_pass() -> void:
+	if _zero_axes_pass == null or not is_instance_valid(_zero_axes_pass):
+		return
+
+	_zero_axes_pass.x_axis_color = zero_x_axis_color
+	_zero_axes_pass.y_axis_color = zero_y_axis_color
+	_zero_axes_pass.line_width_pixels = zero_line_width_pixels
+
+
 func _bind_parent_tilemap() -> bool:
 	if is_instance_valid(_tilemap_parent):
 		return true
@@ -105,25 +138,7 @@ func _get_used_rect() -> Rect2i:
 	if _tilemap_parent == null:
 		return Rect2i()
 
-	if draw_used_rect_only:
-		return _tilemap_parent.get_used_rect()
-
-	var cells := _tilemap_parent.get_used_cells()
-	if cells.is_empty():
-		return Rect2i()
-
-	var min_x := cells[0].x
-	var min_y := cells[0].y
-	var max_x := cells[0].x
-	var max_y := cells[0].y
-
-	for cell in cells:
-		min_x = mini(min_x, cell.x)
-		min_y = mini(min_y, cell.y)
-		max_x = maxi(max_x, cell.x)
-		max_y = maxi(max_y, cell.y)
-
-	return Rect2i(Vector2i(min_x, min_y), Vector2i(max_x - min_x + 1, max_y - min_y + 1))
+	return _tilemap_parent.get_used_rect()
 
 
 func _get_cell_size() -> Vector2:
