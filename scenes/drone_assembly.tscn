@@ -6,6 +6,8 @@
 [ext_resource type="Script" uid="uid://dh4cg1w8fy0ea" path="res://components/CameraWASD.gd" id="3_7a3tk"]
 [ext_resource type="Script" uid="uid://rvn13n06brx8" path="res://components/PlayableAreaInitializer.gd" id="4_u5p2n"]
 [ext_resource type="PackedScene" path="res://scenes/tile_palette_ui.tscn" id="5_qj3h2"]
+[ext_resource type="Script" path="res://components/GridTilePaintInput.gd" id="6_4l1hf"]
+[ext_resource type="Script" path="res://scenes/drone_assembly.gd" id="7_5f1g0"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_40inn"]
 texture = ExtResource("1_k51by")
@@ -52,8 +54,12 @@ shader_parameter/line_thickness_pixels = 0.15
 shader_parameter/line_color = Color(1, 1, 1, 0.28)
 
 [node name="Node2D" type="Node2D" unique_id=1017224262]
+script = ExtResource("7_5f1g0")
 
 [node name="TilePalettePainter" parent="." instance=ExtResource("5_qj3h2")]
+
+[node name="GridTilePaintInput" type="Node" parent="."]
+script = ExtResource("6_4l1hf")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=136936236]
 tile_map_data = PackedByteArray("AAABAAAAAAAAAAEAAAA=")
