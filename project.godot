@@ -15,6 +15,10 @@ run/main_scene="uid://3elegfhqbcd"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+TileTypeRegistry="*res://components/TileTypeRegistry.gd"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"
